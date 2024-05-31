@@ -4,6 +4,7 @@ REMOTE = origin
 VENV_DIR = ./venv/
 REQ_FILE = requirements.txt
 
+CURRENT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 # Default target
 all: venv install-requirements pull push
 
@@ -16,13 +17,13 @@ continue:
 	@git rebase --continue || (echo "Resolve conflicts, then run 'make continue' to finish rebase." && exit 1)
 
 # Add and commit resolved files
-ac:
+cmt:
 	@git add -A
 	@git commit -m "update"
 
 # Push changes to the remote repository
 push:
-	@git push $(REMOTE) $(BRANCH)
+	@git push $(REMOTE) $(CURRENT_BRANCH)
 
 # Convenience target for pulling and pushing
 sync: pull push
@@ -46,7 +47,7 @@ help:
 	@echo "Makefile targets:"
 	@echo "  make pull               - Pull changes from the remote repository with rebase"
 	@echo "  make continue           - Continue rebase after resolving conflicts"
-	@echo "  make commit             - Commit resolved files"
+	@echo "  make cmt             	 - Commit resolved files"
 	@echo "  make push               - Push changes to the remote repository"
 	@echo "  make sync               - Pull changes and then push local changes"
 	@echo "  make venv               - Create and activate a virtual environment"
