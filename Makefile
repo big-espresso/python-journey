@@ -1,59 +1,87 @@
-# Define variables
-BRANCH = main
-REMOTE = origin
-VENV_DIR = ./venv/
-REQ_FILE = requirements.txt
+# define the name of the virtual environment directory
+VENV := /Users/jwar/dev/python-journey/venv
 
-CURRENT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
-# Default target
-all: venv install-requirements pull push
+# default target, when make executed without arguments
+all: venv
 
-# Pull the latest changes from the remote repository
-pull:
-	@git pull $(REMOTE) $(BRANCH) --rebase || (echo "Resolve conflicts, then run 'make continue' to finish rebase." && exit 1)
+$(VENV)/bin/activate: requirements.txt
+	python3 -m venv $(VENV)
+	$(VENV)/bin/pip install -r requirements.txt
 
-# Continue rebase after resolving conflicts
-continue:
-	@git rebase --continue || (echo "Resolve conflicts, then run 'make continue' to finish rebase." && exit 1)
+# venv is a shortcut target
+venv: $(VENV)/bin/activate
 
-# Add and commit resolved files
-cmt:
-	@git add -A
-	@git commit -m "update"
+run: venv
+	$(VENV)/bin/python3 app.py
 
-# Push changes to the remote repository
-push:
-	@git push $(REMOTE) $(CURRENT_BRANCH)
+clean:
+	rm -rf $(VENV)
+	find . -type f -name '*.pyc' -delete
 
-# Convenience target for pulling and pushing
-sync: pull push
+.PHONY: all venv run clean
 
-# Create and activate virtual environment
-venv:
-	@if [ ! -d $(VENV_DIR) ]; then python -m venv $(VENV_DIR); fi
-	@echo "Virtual environment setup complete. To activate, run 'source $(VENV_DIR)/bin/activate'."
 
-# Install requirements from requirements.txt
-install-requirements: venv
-	@source $(VENV_DIR)/bin/activate && pip install -r $(REQ_FILE)
+# # Define variables
+# VENV_DIR := /Users/jwar/dev/python-journey/venv
+# PYTHON := $(VENV_DIR)/bin/python
+# PIP := $(VENV_DIR)/bin/pip
+# ACTIVATE := source $(VENV_DIR)/bin/activate
+# SRC_DIR ?= src
+# MAIN_PY ?= main.py
 
-# Freeze current pip environment to requirements.txt
-freeze-requirements: venv
-	@source $(VENV_DIR)/bin/activate && pip freeze > $(REQ_FILE)
-	@echo "Requirements have been frozen to $(REQ_FILE)"
+# # Include environment variables from .env file if it exists
+# -include .env
 
-# Help target to display available commands
-help:
-	@echo "Makefile targets:"
-	@echo "  make pull               - Pull changes from the remote repository with rebase"
-	@echo "  make continue           - Continue rebase after resolving conflicts"
-	@echo "  make cmt             	 - Commit resolved files"
-	@echo "  make push               - Push changes to the remote repository"
-	@echo "  make sync               - Pull changes and then push local changes"
-	@echo "  make venv               - Create and activate a virtual environment"
-	@echo "  make install-requirements - Install pip requirements from requirements.txt"
-	@echo "  make freeze-requirements  - Freeze current environment to requirements.txt"
-	@echo "  make help               - Show this help message"
+# # Phony targets are not real files
+# .PHONY: help all install init clean test lint run
 
-# To ensure the virtual environment is used within the Makefile
-.PHONY: venv install-requirements freeze-requirements pull continue commit push sync help
+# # Default target
+# all: install lint test
+
+# # Help
+# help:
+# 	@echo "Usage: make [target] [SRC_DIR=directory]"
+# 	@echo ""
+# 	@echo "Targets:"
+# 	@echo "  help       Display this help guide"
+# 	@echo "  all        Setup virtual environment, install dependencies, lint, and run tests"
+# 	@echo "  install    Create virtual environment and Install dependencies"
+# 	@echo "  init       Activate virtual environment"
+# 	@echo "  clean      Remove virtual environment and Python cache files"
+# 	@echo "  test       Run tests"
+# 	@echo "  lint       Lint the code"
+# 	@echo "  run        Run the main application"
+# 	@echo ""
+# 	@echo "Variables:"
+# 	@echo "  SRC_DIR    Directory containing the main.py file (default: src)"
+# 	@echo "  MAIN_PY    Main Python script (default: main.py)"
+
+# # Create virtual environment if it doesn't exist and install dependencies
+# install:
+# 	@test -d $(VENV_DIR) || python3 -m venv $(VENV_DIR)
+# 	@ $(PIP) install -r requirements.txt
+
+
+# # Clean up virtual environment and Python cache files
+# clean:
+# 	rm -rf $(VENV_DIR)
+# 	find . -type d -name "__pycache__" -exec rm -r {} +
+
+# # Run tests
+# test:
+# 	$(ACTIVATE) && pytest tests/
+
+# # Lint the code
+# lint:
+# 	$(ACTIVATE) && flake8 $(SRC_DIR)/
+
+# # Run the application 
+# # Can run with different path like this: make run SRC_DIR=src/day-2 MAIN_PY=script.py
+# run:
+# 	$(ACTIVATE) && $(PYTHON) $(SRC_DIR)/$(MAIN_PY)
+
+# # Note that make will run each command in a different shell. For this reason we can't create a target for this.
+# # This is the reason why we user the && for command chainning
+# # The best solution is to simply create an alias:
+# # echo "alias activate_venv='source ./venv/bin/activate'" >> ~/.zshrc
+# # source ~/.zshrc
