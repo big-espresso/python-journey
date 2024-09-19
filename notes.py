@@ -33,3 +33,10 @@ kwargs_example(Uno=1, Dos=2, Tres=3)
 # kwargs
 # When you use **my_kwargs, you're unpacking a dictionary into individual keyword arguments.
 # The **kwargs parameter inside the function packs those keyword arguments back into a dictionary for use within the function.
+
+
+import random
+
+random_integer = random.randint(1, 10)
+
+print(random_integer)
