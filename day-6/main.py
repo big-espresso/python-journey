@@ -30,15 +30,19 @@
 #     turn_left()
 #     turn_left()
 
-# def conditional_move():
+# def cond_move():
 #     if not wall_in_front():
 #         move()
+
+# while not wall_in_front():
+#     cond_move()
+# turn_left()
 
 # while not at_goal():
 #     if right_is_clear():
 #         turn_right()
-#         conditional_move()
+#         cond_move()
 #     elif front_is_clear():
-#         conditional_move()
+#         cond_move()
 #     else:
 #         turn_left()
