@@ -32,6 +32,10 @@ def decrypt(text, shift):
     deciphered_text = ""
 
     for char in text:
+        if char.lower() not in alphabet:
+            ciphered_text += char
+            continue
+
         letter_index_alphabet = alphabet.index(char.lower())
 
         shifted_index = letter_index_alphabet - shift
