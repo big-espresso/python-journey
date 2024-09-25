@@ -1,3 +1,5 @@
+from art import logo
+
 alphabet = [
     "a",
     "b",
@@ -48,13 +50,15 @@ def caesar(cipher_operation, text, shift):
 
 direction = ""
 
-while direction != "exit":
+print(logo)
+
+running = True
+
+while running:
 
     direction = input(
         "Type 'encode' to encrypt, type 'decode' to decrypt or 'exit' to exit program:\n"
     )
-    if direction == "exit":
-        break
 
     text = input("Type your message:\n").lower()
     shift = int(input("Type the shift number:\n"))
@@ -63,3 +67,8 @@ while direction != "exit":
         caesar(cipher_operation=direction, text=text, shift=shift)
     else:
         print("Wrong input for variable 'direction'")
+
+    continue_execution = input("Continue using the program? (y/n)")
+    running = True if continue_execution.lower() in ["y", "yes"] else False
+
+print("Goodbye!")
